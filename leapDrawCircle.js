@@ -34,17 +34,45 @@ function HandleHand(hand){
     fingers = hand.fingers;
         for (var f=0; f<fingers.length; f++)
         {
-            if(fingers[f].type == 1){
-                HandleFinger(fingers[f]);
-            }
+            HandleFinger(fingers[f]);
+            //if(fingers[f].type == 1){
+            //    HandleFinger(fingers[f]);
+            //}
         }
 };
 
+function HandleBone(bone){
+    var bone_start = bone.prevJoint;
+    if(bone_start[0] < rawXMin){
+        rawXMin = bone_start[0];
+    }
+    if(bone_start[0] > rawXMax){
+        rawXMax = bone_start[0];
+    }
+    if(bone_start[1] < rawYMin){
+        rawYMin = bone_start[1];
+    }
+    if(bone_start[1] > rawYMax){
+        rawYMax = bone_start[1];
+    }
+
+    screenX = (((bone_start[0] - rawXMin) * newXRange) / oldXRange) + 0;
+    screenY = (((bone_start[1] - rawYMin) * newYRange) / oldYRange) + 0;
+
+    circle((screenX-window.innerWidth), (window.innerHeight-screenY), 50);
+};
+
 function HandleFinger(finger){
-    //console.log(finger);
+    console.log(finger);
     var tipPos = finger.tipPosition;
+
+    for (var b=0; b<finger.bones.length; ++b){
+        HandleBone(finger.bones[b]);
+    }
+
+    //CODE FOR DRAWING CIRCLE FOR EACH FINGER
     //console.log(tipPos);
-    if(tipPos[0] < rawXMin){
+    /*if(tipPos[0] < rawXMin){
         rawXMin = tipPos[0];
     }
     if(tipPos[0] > rawXMax){
@@ -55,12 +83,12 @@ function HandleFinger(finger){
     }
     if(tipPos[1] > rawYMax){
         rawYMax = tipPos[1];
-    }
+    } */
 
-    screenX = (((tipPos[0] - rawXMin) * newXRange) / oldXRange) + 0;
-    screenY = (((tipPos[1] - rawYMin) * newYRange) / oldYRange) + 0;
+    //screenX = (((tipPos[0] - rawXMin) * newXRange) / oldXRange) + 0;
+    //screenY = (((tipPos[1] - rawYMin) * newYRange) / oldYRange) + 0;
 
-    circle(screenX, (window.innerHeight-screenY), 50);
+    //circle(screenX, (window.innerHeight-screenY), 50);
 
     //z = finger.tipPosition[2];
     //circle(x+(.5*window.innerWidth),(window.innerHeight-y)-(.5*window.innerHeight),50);
