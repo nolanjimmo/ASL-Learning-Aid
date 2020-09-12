@@ -50,6 +50,18 @@ function HandleBone(bone){
     [screenX1, screenY1] = TransformCoordinates(bone_start[0], bone_start[1]);
     [screenX2, screenY2] = TransformCoordinates(bone_end[0], bone_end[1]);
 
+    if(bone.type == 3){
+        strokeWeight(1);
+    } else if(bone.type == 2){
+        strokeWeight(3);
+    } else if(bone.type == 1){
+        strokeWeight(5);
+    } else if(bone.type == 0){
+        strokeWeight(7);
+    } else {
+        strokeWeight(10);
+    }
+
     line(screenX1 - window.innerWidth, window.innerHeight - screenY1, screenX2 - window.innerWidth, window.innerHeight - screenY2);
     //circle((screenX-window.innerWidth), (window.innerHeight-screenY), 50);
 };
