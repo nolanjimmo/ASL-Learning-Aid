@@ -34,14 +34,11 @@ function HandleFrame(frame){
 
 function HandleHand(hand){
     fingers = hand.fingers;
-        for (var f=0; f<fingers.length; f++)
-        {
-            HandleFinger(fingers[f]);
-            //if(fingers[f].type == 1){
-            //    HandleFinger(fingers[f]);
-            //}
-        }
-};
+        for (var f=fingers.length - 1; f>=0; f--) {
+            for (var b=fingers[f].bones.length - 1; b >= 0; b--)  {
+                HandleBone(fingers[f].bones[b]);
+            }
+        };
 
 function HandleBone(bone){
     var bone_start = bone.prevJoint;
@@ -50,20 +47,15 @@ function HandleBone(bone){
     [screenX1, screenY1] = TransformCoordinates(bone_start[0], bone_start[1]);
     [screenX2, screenY2] = TransformCoordinates(bone_end[0], bone_end[1]);
 
-    if(bone.type == 3){
-        strokeWeight(1);
-    } else if(bone.type == 2){
-        strokeWeight(3);
-    } else if(bone.type == 1){
-        strokeWeight(5);
-    } else if(bone.type == 0){
-        strokeWeight(7);
-    } else {
-        strokeWeight(10);
-    }
 
+    //If anyone comes to look at how I did the strokeWeight calculation... I don't really understand why you would need to pass another param
+    //in to this function when you have the bone type already accessible, so I just this visual conversion using the bone type... I don't really
+    //even see another useful variable within finger that isn't within the bone.
+    strokeWeight((10 - (3 * bone.type)));
+    //stroke((bone.type * 5) * 2);
+    stroke(180 - bone.type * 60);
     line(screenX1 - window.innerWidth, window.innerHeight - screenY1, screenX2 - window.innerWidth, window.innerHeight - screenY2);
-    //circle((screenX-window.innerWidth), (window.innerHeight-screenY), 50);
+
 };
 
 function HandleFinger(finger){
