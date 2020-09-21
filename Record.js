@@ -18,7 +18,7 @@ var hand;
 var fingers;
 var previousNumHands = 0;
 var currentNumHands = 0;
-var oneFrameOfData = nj.zeros([5,4]);
+var oneFrameOfData = nj.arange(5*4*6).reshape(6,5,4);
 Leap.loop(controllerOptions, function(frame)
 {
     currentNumHands = frame.hands.length;
@@ -28,7 +28,6 @@ Leap.loop(controllerOptions, function(frame)
     HandleFrame(frame);
     RecordData();
     previousNumHands = frame.hands.length;
-    console.log(oneFrameOfData.toString());
 }
 );
 
@@ -48,7 +47,8 @@ function HandleHand(hand){
         };
 };
 
-function HandleBone(bone, fingerIndex){
+function HandleBone(bone, finger_index){
+    var bone_index = bone.type;
     var bone_start = bone.prevJoint;
     var bone_end = bone.nextJoint;
     var startZ;
@@ -59,7 +59,12 @@ function HandleBone(bone, fingerIndex){
     startZ = bone_start[2];
     endZ = bone_end[2];
 
-    oneFrameOfData.set(fingerIndex, bone.type , screenX1+screenX2+screenY1+screenY2+startZ+endZ);
+    oneFrameOfData.set(0, finger_index, bone_index, screenX1);
+    oneFrameOfData.set(1, finger_index, bone_index, screenY1);
+    oneFrameOfData.set(2, finger_index, bone_index, startZ);
+    oneFrameOfData.set(3, finger_index, bone_index, screenX2);
+    oneFrameOfData.set(4, finger_index, bone_index, screenY2);
+    oneFrameOfData.set(5, finger_index, bone_index, endZ);
 
 
     //If anyone comes to look at how I did the strokeWeight calculation... I don't really understand why you would need to pass another param
@@ -89,6 +94,7 @@ function RecordData(){
 
     if(currentNumHands > 0 && previousNumHands > currentNumHands){
         background(100);
+        console.log(oneFrameOfData.toString());
     };
 
 };
