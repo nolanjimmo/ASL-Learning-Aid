@@ -16,18 +16,22 @@ var newXRange = window.innerWidth;
 var newYRange = window.innerHeight;
 var hand;
 var fingers;
+var previousNumHands = 0;
+var currentNumHands = 0;
 Leap.loop(controllerOptions, function(frame)
 {
+    currentNumHands = frame.hands.length;
     oldXRange = rawXMax - rawYMin;
     oldYRange = rawYMax - rawYMin;
     clear();
     HandleFrame(frame);
+    previousNumHands = frame.hands.length;
 }
 );
 
 function HandleFrame(frame){
     hand = frame.hands[0];
-    if(frame.hands.length == 1){
+    if(frame.hands.length > 0){
         HandleHand(hand);
     }
 };
@@ -52,9 +56,12 @@ function HandleBone(bone){
     //If anyone comes to look at how I did the strokeWeight calculation... I don't really understand why you would need to pass another param
     //in to this function when you have the bone type already accessible, so I just this visual conversion using the bone type... I don't really
     //even see another useful variable within finger that isn't within the bone.
+    if (currentNumHands == 1){
+        stroke(0, 180 - bone.type * 60, 0);
+    } else if (currentNumHands == 2){
+        stroke(180 - bone.type * 60, 0 ,0);
+    }
     strokeWeight((10 - (3 * bone.type)));
-    //stroke((bone.type * 5) * 2);
-    stroke(180 - bone.type * 60);
     line(screenX1 - window.innerWidth, window.innerHeight - screenY1, screenX2 - window.innerWidth, window.innerHeight - screenY2);
 
 };
