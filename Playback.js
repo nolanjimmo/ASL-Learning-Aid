@@ -1,90 +1,106 @@
-var controllerOptions ={};
-var x;
-var y;
-var z;
-var rawXMin = 500;
-var rawXMax = -500;
-var rawYMin = 500;
-var rawYMax = -500;
-var screenX1;
-var screenY1;
-var screenX2;
-var screenY2;
-var oldXRange;
-var oldYRange;
-var newXRange = window.innerWidth;
-var newYRange = window.innerHeight;
-var hand;
-var fingers;
-Leap.loop(controllerOptions, function(frame)
-{
-    oldXRange = rawXMax - rawYMin;
-    oldYRange = rawYMax - rawYMin;
+var oneFrameOfData = nj.array([[[  991.20521,  991.20521,  677.41693,  584.78052],
+        [  1114.3292,  979.60974,  991.05011,  979.15139],
+        [ 1249.23594,   1227.385, 1269.24585, 1240.72233],
+        [  1383.1211, 1468.21085, 1504.76122, 1495.45985],
+        [ 1502.53427,  1673.6652, 1768.77743, 1786.49472]],
+       [[   589.9354,   589.9354,  453.44762,  359.21267],
+        [  526.27273,  295.37646,  145.34557,   92.17572],
+        [  517.58462,  298.19152,   133.0673,   73.27243],
+        [  519.24666,  326.53874,  188.23467,  120.44196],
+        [  542.02547,   366.4894,  257.43106,  207.98248]],
+       [[     221.41,     221.41,    202.725,    182.013],
+        [    233.294,     196.48,    181.771,    162.884],
+        [    232.169,    195.776,    177.549,    154.925],
+        [     229.42,    195.828,    171.832,    151.584],
+        [    222.446,    193.077,    175.608,    161.752]],
+       [[  991.20521,  677.41693,  584.78052,  529.91907],
+        [  979.60974,  991.05011,  979.15139,  961.67948],
+        [   1227.385, 1269.24585, 1240.72233, 1196.51592],
+        [ 1468.21085, 1504.76122, 1495.45985, 1472.26197],
+        [  1673.6652, 1768.77743, 1786.49472, 1776.06366]],
+       [[   589.9354,  453.44762,  359.21267,  295.01398],
+        [  295.37646,  145.34557,   92.17572,   83.85395],
+        [  298.19152,   133.0673,   73.27243,   66.01113],
+        [  326.53874,  188.23467,  120.44196,   87.09705],
+        [   366.4894,  257.43106,  207.98248,  175.25457]],
+       [[     221.41,    202.725,    182.013,    167.383],
+        [     196.48,    181.771,    162.884,    146.549],
+        [    195.776,    177.549,    154.925,    137.232],
+        [    195.828,    171.832,    151.584,    135.817],
+        [    193.077,    175.608,    161.752,    147.407]]]);
+
+var anotherFrameOfData = nj.array([[[ 939.54075, 939.54075, 545.85735, 372.52449],
+        [1080.06734, 879.39047, 796.30281, 739.05754],
+        [1234.16979,1165.28808,1137.16803,1066.10006],
+        [1387.49756,1446.52538,1437.25933,1376.94538],
+        [1524.49858,1686.91374, 1749.5708,1721.98538]],
+       [[ 690.71396, 690.71396,  511.3597,  378.8293],
+        [  621.9103, 294.92622, 117.84016,  66.11617],
+        [ 607.43223, 293.31979,  93.15268,  27.74374],
+        [  604.1436,  324.6199, 144.66449,  70.84453],
+        [ 622.89537, 367.98843, 226.55196, 171.45346]],
+       [[   253.611,   253.611,   241.242,   227.157],
+        [   268.273,     246.5,   226.542,   206.435],
+        [   267.363,   245.068,   222.252,   199.137],
+        [   264.317,   242.928,   219.895,   198.474],
+        [   256.074,   237.538,   219.584,   204.689]],
+       [[ 939.54075, 545.85735, 372.52449, 218.46296],
+        [ 879.39047, 796.30281, 739.05754, 701.61688],
+        [1165.28808,1137.16803,1066.10006,1000.74529],
+        [1446.52538,1437.25933,1376.94538,1313.29271],
+        [1686.91374, 1749.5708,1721.98538,1659.44153]],
+       [[ 690.71396,  511.3597,  378.8293, 290.47571],
+        [ 294.92622, 117.84016,  66.11617,  63.59034],
+        [ 293.31979,  93.15268,  27.74374,  20.28243],
+        [  324.6199, 144.66449,  70.84453,   45.9954],
+        [ 367.98843, 226.55196, 171.45346, 144.35634]],
+       [[   253.611,   241.242,   227.157,   219.386],
+        [     246.5,   226.542,   206.435,   190.453],
+        [   245.068,   222.252,   199.137,   182.012],
+        [   242.928,   219.895,   198.474,    182.08],
+        [   237.538,   219.584,   204.689,   189.921]]]);
+
+var xStart;
+var yStart;
+var zStart;
+var xEnd;
+var yEnd;
+var zEnd;
+var frameRateIndex = 0;
+var frameRateSwitch = 0;
+function draw(){
+    if(frameRateIndex === 100){
+        frameRateIndex = 0;
+    };
+    if (frameRateIndex === 0 && frameRateSwitch === 0){
+        frameRateSwitch = 1;
+    } else if(frameRateIndex === 0 && frameRateSwitch ===1){
+        frameRateSwitch = 0;
+    };
     clear();
-    HandleFrame(frame);
-}
-);
+    //console.log(oneFrameOfData.get(1,0,2));
+    for(var f = 0; f<5; f++){
+        for(var b = 0; b<4; b++){
 
-function HandleFrame(frame){
-    hand = frame.hands[0];
-    if(frame.hands.length == 1){
-        HandleHand(hand);
-    }
-};
-
-function HandleHand(hand){
-    fingers = hand.fingers;
-        for (var f=fingers.length - 1; f>=0; f--) {
-            for (var b=fingers[f].bones.length - 1; b >= 0; b--)  {
-                HandleBone(fingers[f].bones[b]);
-            }
+            if(frameRateSwitch % 2 === 0){
+                xStart = oneFrameOfData.get(0,f,b);
+                yStart = oneFrameOfData.get(1,f,b);
+                zStart = oneFrameOfData.get(2,f,b);
+                xEnd = oneFrameOfData.get(3,f,b);
+                yEnd = oneFrameOfData.get(4,f,b);
+                zEnd = oneFrameOfData.get(5,f,b);
+                line(xStart, yStart, xEnd , yEnd);
+            } else{
+                xStart = anotherFrameOfData.get(0,f,b);
+                yStart = anotherFrameOfData.get(1,f,b);
+                zStart = anotherFrameOfData.get(2,f,b);
+                xEnd = anotherFrameOfData.get(3,f,b);
+                yEnd = anotherFrameOfData.get(4,f,b);
+                zEnd = anotherFrameOfData.get(5,f,b);
+                line(xStart, yStart, xEnd , yEnd);
+             };
         };
-};
+    };
 
-function HandleBone(bone){
-    var bone_start = bone.prevJoint;
-    var bone_end = bone.nextJoint;
-
-    [screenX1, screenY1] = TransformCoordinates(bone_start[0], bone_start[1]);
-    [screenX2, screenY2] = TransformCoordinates(bone_end[0], bone_end[1]);
-
-
-    //If anyone comes to look at how I did the strokeWeight calculation... I don't really understand why you would need to pass another param
-    //in to this function when you have the bone type already accessible, so I just this visual conversion using the bone type... I don't really
-    //even see another useful variable within finger that isn't within the bone.
-    strokeWeight((10 - (3 * bone.type)));
-    //stroke((bone.type * 5) * 2);
-    stroke(180 - bone.type * 60);
-    line(screenX1 - window.innerWidth, window.innerHeight - screenY1, screenX2 - window.innerWidth, window.innerHeight - screenY2);
-
-};
-
-function HandleFinger(finger){
-    console.log(finger);
-    var tipPos = finger.tipPosition;
-
-    for (var b=0; b<finger.bones.length; ++b){
-        HandleBone(finger.bones[b]);
-    }
-
-}
-
-function TransformCoordinates (x,y) {
-    if(x < rawXMin){
-        rawXMin = x;
-    }
-    if(x > rawXMax){
-        rawXMax = x;
-    }
-    if(y < rawYMin){
-        rawYMin = y;
-    }
-    if(y > rawYMax){
-        rawYMax = y;
-    }
-
-    x = (((x - rawXMin) * newXRange) / oldXRange) + 0;
-    y = (((y - rawYMin) * newYRange) / oldYRange) + 0;
-
-    return [x,y];
+    frameRateIndex++;
 };

@@ -18,9 +18,10 @@ var hand;
 var fingers;
 var previousNumHands = 0;
 var currentNumHands = 0;
-var oneFrameOfData = nj.arange(5*4*6).reshape(6,5,4);
+var oneFrameOfData = nj.zeros([6,5,4]);
 Leap.loop(controllerOptions, function(frame)
 {
+    //console.log(oneFrameOfData.toString());
     currentNumHands = frame.hands.length;
     oldXRange = rawXMax - rawYMin;
     oldYRange = rawYMax - rawYMin;
@@ -40,8 +41,8 @@ function HandleFrame(frame){
 
 function HandleHand(hand){
     fingers = hand.fingers;
-        for (var f=fingers.length - 1; f>=0; f--) {
-            for (var b=fingers[f].bones.length - 1; b >= 0; b--)  {
+        for (var f=0; f<fingers.length; f++) {
+            for (var b=0; b<fingers[f].bones.length; b++)  {
                 HandleBone(fingers[f].bones[b], f);
             }
         };
@@ -76,7 +77,7 @@ function HandleBone(bone, finger_index){
         stroke(180 - bone.type * 60, 0 ,0);
     }
     strokeWeight((10 - (3 * bone.type)));
-    line(screenX1 - window.innerWidth, window.innerHeight - screenY1, screenX2 - window.innerWidth, window.innerHeight - screenY2);
+    line(screenX1, screenY1, screenX2, screenY2);
 
 };
 
@@ -116,5 +117,7 @@ function TransformCoordinates (x,y) {
     x = (((x - rawXMin) * newXRange) / oldXRange) + 0;
     y = (((y - rawYMin) * newYRange) / oldYRange) + 0;
 
+    x = x - window.innerWidth;
+    y = window.innerHeight - y;
     return [x,y];
 };
