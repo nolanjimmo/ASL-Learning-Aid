@@ -1,4 +1,5 @@
 var controllerOptions ={};
+nj.config.printThreshold = 1000;
 var x;
 var y;
 var z;
@@ -18,7 +19,9 @@ var hand;
 var fingers;
 var previousNumHands = 0;
 var currentNumHands = 0;
-var oneFrameOfData = nj.zeros([6,5,4]);
+var numSamples = 100;
+var currentSample = 0;
+var oneFrameOfData = nj.zeros([6,5,4,numSamples]);
 Leap.loop(controllerOptions, function(frame)
 {
     //console.log(oneFrameOfData.toString());
@@ -35,37 +38,38 @@ Leap.loop(controllerOptions, function(frame)
 function HandleFrame(frame){
     hand = frame.hands[0];
     if(frame.hands.length > 0){
-        HandleHand(hand);
+        HandleHand(hand, frame.interactionBox);
     }
 };
 
-function HandleHand(hand){
+function HandleHand(hand, InteractionBox){
     fingers = hand.fingers;
-        for (var f=0; f<fingers.length; f++) {
+        for (var f=fingers.length-1; f>=0; f--) {
             for (var b=0; b<fingers[f].bones.length; b++)  {
-                HandleBone(fingers[f].bones[b], f);
+                HandleBone(fingers[f].bones[b], f, InteractionBox);
             }
         };
 };
 
-function HandleBone(bone, finger_index){
+function HandleBone(bone, finger_index, InteractionBox){
     var bone_index = bone.type;
-    var bone_start = bone.prevJoint;
-    var bone_end = bone.nextJoint;
-    var startZ;
-    var endZ;
+    var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true);
+    var normalizedNextJoint = InteractionBox.normalizePoint(bone.nextJoint, true);
 
-    [screenX1, screenY1] = TransformCoordinates(bone_start[0], bone_start[1]);
-    [screenX2, screenY2] = TransformCoordinates(bone_end[0], bone_end[1]);
-    startZ = bone_start[2];
-    endZ = bone_end[2];
+    oneFrameOfData.set(0, finger_index, bone_index, currentSample, normalizedPrevJoint[0]);
+    oneFrameOfData.set(1, finger_index, bone_index, currentSample, normalizedPrevJoint[1]);
+    oneFrameOfData.set(2, finger_index, bone_index, currentSample, normalizedPrevJoint[2]);
+    oneFrameOfData.set(3, finger_index, bone_index, currentSample, normalizedNextJoint[0]);
+    oneFrameOfData.set(4, finger_index, bone_index, currentSample, normalizedNextJoint[1]);
+    oneFrameOfData.set(5, finger_index, bone_index, currentSample, normalizedNextJoint[2]);
 
-    oneFrameOfData.set(0, finger_index, bone_index, screenX1);
-    oneFrameOfData.set(1, finger_index, bone_index, screenY1);
-    oneFrameOfData.set(2, finger_index, bone_index, startZ);
-    oneFrameOfData.set(3, finger_index, bone_index, screenX2);
-    oneFrameOfData.set(4, finger_index, bone_index, screenY2);
-    oneFrameOfData.set(5, finger_index, bone_index, endZ);
+
+    screenX1 = window.innerWidth * normalizedPrevJoint[0];
+    screenY1 = window.innerHeight * (1 - normalizedPrevJoint[1]);
+    screenX2 = window.innerWidth * normalizedNextJoint[0];
+    screenY2 = window.innerHeight * (1 - normalizedNextJoint[1]);
+
+
 
 
     //If anyone comes to look at how I did the strokeWeight calculation... I don't really understand why you would need to pass another param
@@ -89,35 +93,20 @@ function HandleFinger(finger){
         HandleBone(finger.bones[b]);
     }
 
-}
+};
 
 function RecordData(){
 
+    if(currentNumHands == 2){
+        currentSample++;
+        if(currentSample == numSamples){
+            currentSample = 0;
+        };
+    };
     if(currentNumHands > 0 && previousNumHands > currentNumHands){
         background(100);
+        //console.log(oneFrameOfData.pick(null,null,null,0).toString());
         console.log(oneFrameOfData.toString());
     };
 
-};
-
-function TransformCoordinates (x,y) {
-    if(x < rawXMin){
-        rawXMin = x;
-    }
-    if(x > rawXMax){
-        rawXMax = x;
-    }
-    if(y < rawYMin){
-        rawYMin = y;
-    }
-    if(y > rawYMax){
-        rawYMax = y;
-    }
-
-    x = (((x - rawXMin) * newXRange) / oldXRange) + 0;
-    y = (((y - rawYMin) * newYRange) / oldYRange) + 0;
-
-    x = x - window.innerWidth;
-    y = window.innerHeight - y;
-    return [x,y];
 };

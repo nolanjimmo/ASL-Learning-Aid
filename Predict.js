@@ -159,6 +159,8 @@ var numFeatures = irisData.shape[1] - 1;
 var currentFeatures;
 var currentLabel;
 var predictedLabel;
+var testingSampleIndex = 1;
+var predictedClassLabels = nj.zeros(numSamples);
 
 function draw(){
 
@@ -168,6 +170,7 @@ function draw(){
         knnClassifier.addExample(currentFeatures.tolist(), currentLabel);
     }
     Test();
+    DrawCircles();
 };
 
 function Train(){
@@ -175,6 +178,7 @@ function Train(){
     for(var i = 0; i < numSamples; i += 2){
         currentFeatures = irisData.pick(i).slice([0,numFeatures]);
         currentLabel = irisData.pick(i).get(4);
+        knnClassifier.addExample(currentFeatures.tolist(), currentLabel);
     };
     trainingCompleted = true;
 };
@@ -183,9 +187,48 @@ function Test(){
     var currentTestFeatures;
     var currentTestLabel;
     console.log("I am being tested");
-    for(var f = 1; f < numSamples; f += 2){
-        currentTestFeatures = irisData.pick(i).slice([0,numFeatures]);
-        currentTestLabel = irisData.pick(i).get(4);
-        predictedLabel = knnClassifier.classify(currentTestFeatures.tolist());
+    //for(var f = 1; f < numSamples; f += 2){
+    currentTestFeatures = irisData.pick(testingSampleIndex).slice([0,numFeatures]);
+    currentTestLabel = irisData.pick(testingSampleIndex).get(4);
+    predictedLabel = knnClassifier.classify(currentTestFeatures.tolist(), GotResults);
+    //console.log(currentTestFeatures.tolist(), currentTestLabel, predictedLabel);
+    //};
+};
+
+function GotResults(err, result){
+    console.log(parseInt(result.label));
+    predictedClassLabels.set(testingSampleIndex, parseInt(result.label));
+    testingSampleIndex += 2;
+    if(testingSampleIndex > 149){
+        testingSampleIndex = 1;
+    };
+};
+
+function DrawCircles(){
+    var x;
+    var y;
+    var c;
+    for(var g = 0; g < numSamples; g++){
+        x = irisData.pick(g).get(0);
+        y = irisData.pick(g).get(1);
+        c = irisData.pick(g).get(4);
+        //console.log(testingSampleIndex);
+        if( c == 0){
+            fill('red');
+        } else if( c == 1){
+            fill('blue');
+        } else {
+            fill('green');
+        };
+        if (g % 2 == 1){
+            if(predictedClassLabels.get(g) == 0){
+                stroke('red');
+            } else if (predictedClassLabels.get(g) == 1){
+                stroke('blue');
+            } else{
+                stroke('green');
+            };
+        };
+        circle(x*100,y*100,10);
     };
 };
