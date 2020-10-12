@@ -54,15 +54,55 @@ Leap.loop(controllerOptions, function(frame)
 );
 
 function Train(){
-    for(var t=0; t < train1.shape[3]; t++){
+    for(var t=0; t < train0.shape[3]; t++){
+        features = train0.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 0);
+    };
+    for(t=0; t < train1.shape[3]; t++){
         features = train1.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 1);
     };
-    for(var g=0; g < train2.shape[3]; g++){
-        features = train2.pick(null,null,null,g);
+    for(t=0; t < train2.shape[3]; t++){
+        features = train2.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 2);
+    };
+    for(t=0; t < train3.shape[3]; t++){
+        features = train3.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 3);
+    };
+    for(t=0; t < train4.shape[3]; t++){
+        features = train4.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 4);
+    };
+    for(t=0; t < train5.shape[3]; t++){
+        features = train5.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 5);
+    };
+    for(t=0; t < train6.shape[3]; t++){
+        features = train6.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 6);
+    };
+    for(t=0; t < train7.shape[3]; t++){
+        features = train7.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 7);
+    };
+    for(t=0; t< train8.shape[3]; t++){
+        features = train8.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 8);
+    };
+    for(t=0; t < train9.shape[3]; t++){
+        features = train9.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 9);
     };
     trainingCompleted = true;
 };
@@ -77,9 +117,10 @@ function Test(){
 };
 
 function GotResults(err, result){
+    var HCD = 9;
     predictedClassLabels.set(0, parseInt(result.label));
     predResultCounter++;
-    meanPredAccuracy = ((predResultCounter - 1)*meanPredAccuracy + (parseInt(result.label) == 2)) / predResultCounter;
+    meanPredAccuracy = ((predResultCounter - 1)*meanPredAccuracy + (parseInt(result.label) == HCD)) / predResultCounter;
     console.log(predResultCounter, meanPredAccuracy, parseInt(result.label));
 };
 
@@ -95,7 +136,7 @@ function HandleFrame(frame){
 function HandleHand(hand, InteractionBox){
     fingers = hand.fingers;
         for (var f=fingers.length-1; f>=0; f--) {
-            for (var b=0; b<fingers[f].bones.length; b++)  {
+            for (var b=fingers[f].bones.length-1; b>=0; b--)  {
                 HandleBone(fingers[f].bones[b], f, InteractionBox);
             }
         };
@@ -165,9 +206,52 @@ function RecordData(){
 
 function CenterData(){
     var xValues = oneFrameOfData.slice([],[], [0,6,3]);
-    var currentMean = xValues.mean();
-    console.log(currentMean);
-    var horizontalShift = 0.5 - currentMean;
-    for(var i = )
-
+    var currentXMean = xValues.mean();
+    //console.log(currentMean);
+    var horizontalXShift = 0.5 - currentXMean;
+    var shiftedX;
+    var currentX;
+    //These are the nested loops for X
+    for(var r = 0; r<5; r++){
+        for(var c = 0; c<4; c++){
+            currentX = oneFrameOfData.get(r, c, 0);
+            shiftedX = currentX + horizontalXShift;
+            oneFrameOfData.set(r, c, 0, shiftedX);
+            currentX = oneFrameOfData.get(r, c, 3);
+            shiftedX = currentX + horizontalXShift;
+            oneFrameOfData.set(r, c, 3, shiftedX);
+        }
+    }
+    //This is the section for Y values
+    var yValues = oneFrameOfData.slice([],[],[1,6,3]);
+    var currentYMean = yValues.mean();
+    var horizontalYShift = 0.5 - currentYMean;
+    var shiftedY;
+    var currentY;
+    for(r = 0; r<5; r++){
+        for(c = 0; c<4; c++){
+            currentY = oneFrameOfData.get(r,c,1);
+            shiftedY = currentY + horizontalYShift;
+            oneFrameOfData.set(r,c,1,shiftedY);
+            currentY = oneFrameOfData.get(r,c,4);
+            shiftedY = currentY + horizontalYShift;
+            oneFrameOfData.set(r,c,4,shiftedY);
+        }
+    }
+    //This is the section for Z Values
+    var zValues = oneFrameOfData.slice([],[],[2,6,3]);
+    var currentZMean = zValues.mean();
+    var horizontalZShift = 0.5 - currentZMean;
+    var shiftedZ;
+    var currentZ;
+    for(r = 0; r<5; r++){
+        for(c = 0; c<4; c++){
+            currentZ = oneFrameOfData.get(r,c,2);
+            shiftedZ = currentZ + horizontalZShift;
+            oneFrameOfData.set(r,c,2,shiftedZ);
+            currentZ = oneFrameOfData.get(r,c,5);
+            shiftedZ = currentZ + horizontalZShift;
+            oneFrameOfData.set(r,c,5,shiftedZ);
+        }
+    }
 };
