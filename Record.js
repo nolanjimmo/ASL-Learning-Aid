@@ -21,7 +21,7 @@ var previousNumHands = 0;
 var currentNumHands = 0;
 var numSamples = 100;
 var currentSample = 0;
-var oneFrameOfData = nj.zeros([6,5,4,numSamples]);
+var oneFrameOfData = nj.zeros([5,4, 6, numSamples]);
 Leap.loop(controllerOptions, function(frame)
 {
     //console.log(oneFrameOfData.toString());
@@ -56,12 +56,12 @@ function HandleBone(bone, finger_index, InteractionBox){
     var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true);
     var normalizedNextJoint = InteractionBox.normalizePoint(bone.nextJoint, true);
 
-    oneFrameOfData.set(0, finger_index, bone_index, currentSample, normalizedPrevJoint[0]);
-    oneFrameOfData.set(1, finger_index, bone_index, currentSample, normalizedPrevJoint[1]);
-    oneFrameOfData.set(2, finger_index, bone_index, currentSample, normalizedPrevJoint[2]);
-    oneFrameOfData.set(3, finger_index, bone_index, currentSample, normalizedNextJoint[0]);
-    oneFrameOfData.set(4, finger_index, bone_index, currentSample, normalizedNextJoint[1]);
-    oneFrameOfData.set(5, finger_index, bone_index, currentSample, normalizedNextJoint[2]);
+    oneFrameOfData.set(finger_index, bone_index, 0, currentSample, normalizedPrevJoint[0]);
+    oneFrameOfData.set(finger_index, bone_index, 1, currentSample, normalizedPrevJoint[1]);
+    oneFrameOfData.set(finger_index, bone_index, 2, currentSample, normalizedPrevJoint[2]);
+    oneFrameOfData.set(finger_index, bone_index, 3, currentSample, normalizedNextJoint[0]);
+    oneFrameOfData.set(finger_index, bone_index, 4, currentSample, normalizedNextJoint[1]);
+    oneFrameOfData.set(finger_index, bone_index, 5, currentSample, normalizedNextJoint[2]);
 
 
     screenX1 = window.innerWidth * normalizedPrevJoint[0];
