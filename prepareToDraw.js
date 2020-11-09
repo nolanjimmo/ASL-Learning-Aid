@@ -5,6 +5,8 @@ var arrowU;
 var arrowD;
 var arrowT;
 var arrowA;
+var digit1;
+var digit9;
 function setup() {
     createCanvas(window.innerWidth, window.innerHeight);
     img = loadImage('https://i.imgur.com/x4d9oJq.jpeg');
@@ -14,4 +16,6 @@ function setup() {
     arrowR = loadImage('https://i.imgur.com/WEJqBW2.png');
     arrowT = loadImage('https://i.imgur.com/F8BkZHC.png');
     arrowU = loadImage('https://i.imgur.com/xNV0mL1.png');
+    digit1 = loadImage('https://i.imgur.com/tRtBikl.png');
+    digit9 = loadImage('https://i.imgur.com/YlQtuEW.png');
 }

@@ -1,9 +1,10 @@
 const knnClassifier = ml5.KNNClassifier();
+const net = new brain.NeuralNetwork();
 
 var controllerOptions ={};
 var trainingCompleted = false;
 var numSamples = 2;
-var features;
+var features = [];
 var currentLabel;
 var predictedLabel;
 var testingSampleIndex = 0;
@@ -32,10 +33,12 @@ var previousNumHands = 0;
 var currentNumHands = 0;
 var numSamples = 100;
 var currentSample = 0;
-//var oneFrameOfData = nj.zeros([6,5,4,numSamples]);
+//var oneFrameOfData = nj.zeros([5,4,6,numSamples]);
 var oneFrameOfData = nj.zeros([5,4,6]);
 var predResultCounter = 0;
 var meanPredAccuracy = 0;
+var digitToShow = 1;
+var timeSinceLastDigitChange = new Date();
 
 Leap.loop(controllerOptions, function(frame)
 {
@@ -50,7 +53,7 @@ Leap.loop(controllerOptions, function(frame)
     } else if (programState == 1){
         HandleState1(frame);
     } else {
-        HandleState1(frame);
+        HandleState2(frame);
     }
     RecordData();
     previousNumHands = frame.hands.length;
@@ -58,22 +61,39 @@ Leap.loop(controllerOptions, function(frame)
 );
 
 function Train(){
+    //var trainingData = [];
     for(var t=0; t < train0.shape[3]; t++){
-        //features = train0.pick(null,null,null,t);
-        //features = features.reshape(120);
+        features = train0.pick(null,null,null,t);
+        features = features.reshape(120);
         //knnClassifier.addExample(features.tolist(), 0);
+        //console.log(features.selection.data);
+        //net.train([{input: features.selection.data, output: [0]}]);
+        //trainingData.push({input: features.selection.data, output: [0]});
 
         features = train1.pick(null,null,null,t);
         features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 1);
+        //knnClassifier.addExample(features.toList(), 1);
+        //Trying out the Brain.js ML algo
+        //console.log(features.selection.data);
+        //net.train([{input: features.selection.data, output: [1]}]);
+        //trainingData.push({input: features.selection.data, output: [1]});
 
         features = train1Second.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 1);
+        //Brain.js
+        //console.log(features.selection.data);
+        //net.train([{input: features.selection.data, output: [1]}]);
+        //trainingData.push({input: features.selection.data, output: [1]});
+
 
         features = train1Bongard.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 1);
+        //Brain.js
+        //console.log(features.selection.data);
+        //net.train([{input: features.selection.data, output: [1]}]);
+        //trainingData.push({input: features.selection.data, output: [1]});
 
         features = train1Davis.pick(null,null,null,t);
         features = features.reshape(120);
@@ -82,10 +102,18 @@ function Train(){
         features = train2.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 2);
+        //Brain.js
+        //console.log(features.selection.data);
+        //net.train([{input: features.selection.data, output: [2]}]);
+        //trainingData.push({input: features.selection.data, output: [2]});
 
         features = train2Second.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 2);
+        //Brain.js
+        console.log(features.selection.data);
+        //net.train([{input: features.selection.data, output: [2]}]);
+        //trainingData.push({input: features.selection.data, output: [2]});
 
         //features = train2Rielly.pick(null,null,null,t);
         //features = features.reshape(120);
@@ -96,21 +124,23 @@ function Train(){
         knnClassifier.addExample(features.tolist(), 3);
 
 
-        //features = train3Jing.pick(null,null,null,t);
-        //features = features.reshape(120);
-        //knnClassifier.addExample(features.tolist(), 3);
-
-        features = train3Luksevish.pick(null,null,null,t);
+        features = train3Jing.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 3);
-/*
+
+        //features = train3Luksevish.pick(null,null,null,t);
+        //features = features.reshape(120);
+        //trainingData.push({input: features.selection.data, output: [3]});
+
         features = train4.pick(null,null,null,t);
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 4);
+        //trainingData.push({input: features.selection.data, output: [4]});
+        //console.log("We are here");
 
-        features = train4Bongard.pick(null,null,null,t);
-        features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 4);
+        //features = train4Bongard.pick(null,null,null,t);
+        //features = features.reshape(120);
+        //knnClassifier.addExample(features.tolist(), 4);
 
         features = train4Me.pick(null,null,null,t);
         features = features.reshape(120);
@@ -124,10 +154,10 @@ function Train(){
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 5);
 
-        features = train5Kiely.pick(null,null,null,t);
-        features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 5);
-*/
+        //features = train5Kiely.pick(null,null,null,t);
+        //features = features.reshape(120);
+        //knnClassifier.addExample(features.tolist(), 5);
+
 
         features = train6.pick(null,null,null,t);
         features = features.reshape(120);
@@ -137,9 +167,9 @@ function Train(){
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 6);
 
-        //features = train7.pick(null,null,null,t);
-        //features = features.reshape(120);
-        //knnClassifier.addExample(features.tolist(), 7);
+        features = train7.pick(null,null,null,t);
+        features = features.reshape(120);
+        knnClassifier.addExample(features.tolist(), 7);
 
         features = myTrain7.pick(null,null,null,t);
         features = features.reshape(120);
@@ -153,7 +183,9 @@ function Train(){
         features = features.reshape(120);
         knnClassifier.addExample(features.tolist(), 9);
     };
+    //net.train(trainingData);
     trainingCompleted = true;
+    console.log("training is done");
 };
 
 function Test(){
@@ -163,14 +195,17 @@ function Test(){
     currentTestSample = currentTestSample.reshape(120);
     currentTestLabel = 0;
     predictedLabel = knnClassifier.classify(currentTestSample.tolist(), GotResults);
+    //console.log(currentTestSample.toList.toString);
+    //var brainPred = net.run(currentTestSample.selection.data);
+    //console.log(brainPred);
 };
 
 function GotResults(err, result){
     var HCD = 9;
     predictedClassLabels.set(0, parseInt(result.label));
     predResultCounter++;
-    meanPredAccuracy = ((predResultCounter - 1)*meanPredAccuracy + (parseInt(result.label) == HCD)) / predResultCounter;
-    console.log(parseInt(result.label));
+    meanPredAccuracy = ((predResultCounter - 1)*meanPredAccuracy + (parseInt(result.label) == digitToShow)) / predResultCounter;
+    console.log(parseInt(result.label), meanPredAccuracy);
 };
 
 function DetermineState(frame){
@@ -183,9 +218,76 @@ function DetermineState(frame){
     }
 };
 
+function TrainKNNIfNotDoneYet(){
+    if (trainingCompleted == false){
+        Train();
+    }
+}
+
+function HandleState0(frame){
+    TrainKNNIfNotDoneYet();
+    DrawImageToHelpUserPutTheirHandOverTheDevice();
+};
+
+function HandleState1(frame){
+    HandleFrame(frame);
+    if (HandIsToFarToTheLeft())
+        DrawArrowRight();
+    if (HandIsToFarToTheRight())
+        DrawArrowLeft();
+    if (HandIsToFarUp())
+        DrawArrowDown();
+    if (HandIsToFarDown())
+        DrawArrowUp();
+    if (HandIsToClose())
+        DrawArrowAway();
+    if (HandIsToFarAway())
+        DrawArrowTowards();
+};
+
+function HandleState2(frame){
+    HandleFrame(frame);
+    DrawLowerRightPanel();
+    Test();
+};
+
 function HandIsUncentered(){
     return HandIsToFarToTheLeft();
 };
+
+function DrawLowerRightPanel(){
+    if(digitToShow == 1)
+        image(digit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    else if(digitToShow == 9)
+        image(digit9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    DetermineWhetherToSwitchDigits();
+};
+
+function DetermineWhetherToSwitchDigits(){
+    if(TimeToSwitchDigits())
+        SwitchDigits();
+};
+
+function TimeToSwitchDigits(){
+    var currentTime = new Date();
+    var difInMilliseconds = -1*(timeSinceLastDigitChange - currentTime);
+    var difInSeconds = difInMilliseconds/1000;
+    if(difInSeconds > 1)
+        return true;
+    else return false;
+}
+
+function SwitchDigits(){
+    if (digitToShow == 1){
+        digitToShow = 9;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+    } else if (digitToShow == 9){
+        digitToShow = 1;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+    }
+}
 
 function HandIsToFarToTheLeft(){
     var xValues = oneFrameOfData.slice([],[], [0,6,3]);
@@ -259,39 +361,6 @@ function DrawArrowAway(){
     image(arrowA, 0, 0, window.innerWidth/2, window.innerHeight/2);
 };
 
-function HandleState0(frame){
-    TrainKNNIfNotDoneYet();
-    DrawImageToHelpUserPutTheirHandOverTheDevice();
-};
-
-function HandleState1(frame){
-    HandleFrame(frame);
-    if (HandIsToFarToTheLeft())
-        DrawArrowRight();
-    if (HandIsToFarToTheRight())
-        DrawArrowLeft();
-    if (HandIsToFarUp())
-        DrawArrowDown();
-    if (HandIsToFarDown())
-        DrawArrowUp();
-    if (HandIsToClose())
-        DrawArrowAway();
-    if (HandIsToFarAway())
-        DrawArrowTowards();
-    //Test();
-};
-
-function HandleState2(){
-    HandleFrame(frame);
-    //Test();
-};
-
-function TrainKNNIfNotDoneYet(){
-    if (trainingCompleted == false){
-        //Train();
-    }
-}
-
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
     image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
 }
@@ -339,8 +408,8 @@ function HandleBone(bone, finger_index, InteractionBox){
     //in to this function when you have the bone type already accessible, so I just this visual conversion using the bone type... I don't really
     //even see another useful variable within finger that isn't within the bone.
     if (currentNumHands == 1){
-        //stroke(0, 180 - bone.type * 60, 0);
-        stroke(180 - bone.type * 60);
+        stroke(120-(meanPredAccuracy*120), meanPredAccuracy*120, 0);
+        //stroke(180 - bone.type * 60);
     } else if (currentNumHands == 2){
         //stroke(180 - bone.type * 60, 0 ,0);
         stroke(180 - bone.type * 60);
@@ -425,4 +494,50 @@ function CenterData(){
             oneFrameOfData.set(r,c,5,shiftedZ);
         }
     }
+};
+
+function SignIn(){
+    var username = document.getElementById('username').value;
+    var list = document.getElementById('users');
+    if (IsNewUser(username, list)){
+        createNewUser(username, list);
+        createSignInItem(username, list);
+    } else {
+        var ID = String(username) + "_signins";
+        var listItem = document.getElementById( ID );
+        listItem.innerHTML = parseInt(listItem.innerHTML) + 1;
+    }
+    //var item = document.createElement('li');
+    //item.innerHTML = String(username);
+    //list.appendChild(item);
+    //console.log("You are signed in: " + username);
+    //console.log(list);
+    //This log statement is for when we want to copy the list over the HTML file at the end
+    console.log(list.innerHTML);
+    return false;
+};
+
+function createNewUser(username, list){
+    var item1 = document.createElement('li');
+        item1.innerHTML = String(username);
+        item1.id = String(username) + "_name";
+        list.appendChild(item1);
+};
+
+function createSignInItem(username, list){
+    var item2 = document.createElement('li');
+        item2.innerHTML = 1;
+        item2.id = String(username) + "_signins";
+        list.appendChild(item2);
+};
+
+function IsNewUser(username, list){
+    var users = list.children;
+    var usernameFound = false;
+    for (var i = 0; i < users.length; i++){
+        if (users[i].innerHTML == username){
+            usernameFound = true;
+        }
+    }
+    return usernameFound == false;
 };
