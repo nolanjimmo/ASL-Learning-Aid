@@ -37,8 +37,28 @@ var currentSample = 0;
 var oneFrameOfData = nj.zeros([5,4,6]);
 var predResultCounter = 0;
 var meanPredAccuracy = 0;
-var digitToShow = 1;
+var digitToShow = 0;
 var timeSinceLastDigitChange = new Date();
+var learned0 = false;
+var learned1 = false;
+var learned2 = false;
+var learned3 = false;
+var learned4 = false;
+var learned5 = false;
+var learned6 = false;
+var learned7 = false;
+var learned8 = false;
+var learned9 = false;
+var timeInterval0 = 5;
+var timeInterval1 = 5;
+var timeInterval2 = 5;
+var timeInterval3 = 5;
+var timeInterval4 = 5;
+var timeInterval5 = 5;
+var timeInterval6 = 5;
+var timeInterval7 = 5;
+var timeInterval8 = 5;
+var timeInterval9 = 5;
 
 Leap.loop(controllerOptions, function(frame)
 {
@@ -205,7 +225,7 @@ function GotResults(err, result){
     predictedClassLabels.set(0, parseInt(result.label));
     predResultCounter++;
     meanPredAccuracy = ((predResultCounter - 1)*meanPredAccuracy + (parseInt(result.label) == digitToShow)) / predResultCounter;
-    console.log(parseInt(result.label), meanPredAccuracy);
+    //console.log(parseInt(result.label), meanPredAccuracy);
 };
 
 function DetermineState(frame){
@@ -256,10 +276,47 @@ function HandIsUncentered(){
 };
 
 function DrawLowerRightPanel(){
-    if(digitToShow == 1)
-        image(digit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    else if(digitToShow == 9)
-        image(digit9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    if(digitToShow == 0){
+        image(number0, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval1 > 0)
+            image(digit0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 1){
+        image(number1, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval1 > 0)
+            image(digit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 2){
+        image(number2, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval2 > 0)
+            image(digit2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 3){
+        image(number3, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval3 > 0)
+            image(digit3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 4){
+        image(number4, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval4 > 0)
+            image(digit4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 5){
+        image(number5, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval5 > 0)
+            image(digit5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 6){
+        image(number6, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval6)
+            image(digit6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 7){
+        image(number7, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval7 > 0)
+            image(digit7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 8){
+        image(number8, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval8 > 0)
+            image(digit8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    } else if(digitToShow == 9){
+        image(number9, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        if(timeInterval9 > 0)
+            image(digit9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+    };
     DetermineWhetherToSwitchDigits();
 };
 
@@ -272,20 +329,119 @@ function TimeToSwitchDigits(){
     var currentTime = new Date();
     var difInMilliseconds = -1*(timeSinceLastDigitChange - currentTime);
     var difInSeconds = difInMilliseconds/1000;
-    if(difInSeconds > 1)
+    if(digitToShow == 0 && difInSeconds > timeInterval0)
+        return true;
+    else if(digitToShow == 1 && difInSeconds > timeInterval1)
+        return true;
+    else if(digitToShow == 2 && difInSeconds > timeInterval2)
+        return true;
+    else if(digitToShow == 3 && difInSeconds > timeInterval3)
+        return true;
+    else if(digitToShow == 4 && difInSeconds > timeInterval4)
+        return true;
+    else if(digitToShow == 5 && difInSeconds > timeInterval5)
+        return true;
+    else if(digitToShow == 6 && difInSeconds > timeInterval6)
+        return true;
+    else if(digitToShow == 7 && difInSeconds > timeInterval7)
+        return true;
+    else if(digitToShow == 8 && difInSeconds > timeInterval8)
+        return true;
+    else if(digitToShow == 9 && difInSeconds > timeInterval9)
         return true;
     else return false;
 }
 
 function SwitchDigits(){
-    if (digitToShow == 1){
-        digitToShow = 9;
-        predResultCounter = 0;
-        timeSinceLastDigitChange = new Date();
-    } else if (digitToShow == 9){
+    if (digitToShow == 0){
+        if(meanPredAccuracy > .5 && timeInterval0 > 0){
+            //learned0 = true;
+            --timeInterval0;
+        }
         digitToShow = 1;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
+    } else if (digitToShow == 1){
+        if(meanPredAccuracy > .5 && timeInterval1 > 0){
+            //learned1 = true;
+            --timeInterval1;
+        }
+        digitToShow = 2;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval1);
+    } else if (digitToShow == 2){
+        if(meanPredAccuracy > .5 && timeInterval2 > 0){
+            //learned2 = true;
+            --timeInterval2;
+        }
+        digitToShow = 3;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval2);
+    } else if (digitToShow == 3){
+        if(meanPredAccuracy > .5 && timeInterval3 > 0){
+            //learned3 = true;
+            --timeInterval3;
+        }
+        digitToShow = 4;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval3);
+    } else if (digitToShow == 4){
+        if(meanPredAccuracy > .5 && timeInterval4 > 0){
+            //learned4 = true;
+            --timeInterval4;
+        }
+        digitToShow = 5;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval4);
+    } else if (digitToShow == 5){
+        if(meanPredAccuracy > .5 && timeInterval5 > 0){
+            //learned5 = true;
+            --timeInterval5;
+        }
+        digitToShow = 6;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval5);
+    } else if (digitToShow == 6){
+        if(meanPredAccuracy > .5 && timeInterval6 > 0){
+            //learned6 = true;
+            --timeInterval6;
+        }
+        digitToShow = 7;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval7);
+    } else if (digitToShow == 7){
+        if(meanPredAccuracy > .5 && timeInterval7 > 0){
+            //learned7 = true;
+            --timeInterval7;
+        }
+        digitToShow = 8;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval7);
+    } else if (digitToShow == 8){
+        if(meanPredAccuracy > .5 && timeInterval8 > 0){
+            //learned8 = true;
+            --timeInterval8;
+        }
+        digitToShow = 9;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval8);
+    } else if (digitToShow == 9){
+        if(meanPredAccuracy > .5 && timeInterval9 > 0){
+            //learned9 = true;
+            --timeInterval9;
+        }
+        digitToShow = 1;
+        predResultCounter = 0;
+        timeSinceLastDigitChange = new Date();
+        console.log(timeInterval9);
     }
 }
 
