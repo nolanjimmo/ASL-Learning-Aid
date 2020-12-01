@@ -36,5 +36,7 @@ function setup() {
     number7 = loadImage('https://i.imgur.com/Rk76ACs.png');
     number8 = loadImage('https://i.imgur.com/DPBQlto.png');
     number9 = loadImage('https://i.imgur.com/g5CBa3O.png');
+    lessons = loadImage('https://i.imgur.com/6o5wazD.png');
+    speedTest = loadImage('https://i.imgur.com/RUVyrSb.jpg');
 
 }

@@ -87,12 +87,12 @@ function draw(){
         for(var b = 0; b<4; b++){
 
             if(frameRateSwitch % 2 === 0){
-                xStart = oneFrameOfData.get(0,f,b);
-                yStart = oneFrameOfData.get(1,f,b);
-                zStart = oneFrameOfData.get(2,f,b);
-                xEnd = oneFrameOfData.get(3,f,b);
-                yEnd = oneFrameOfData.get(4,f,b);
-                zEnd = oneFrameOfData.get(5,f,b);
+                xStart = train5.get(0,f,b);
+                yStart = train5.get(1,f,b);
+                zStart = train5.get(2,f,b);
+                xEnd = train5.get(3,f,b);
+                yEnd = train5.get(4,f,b);
+                zEnd = train5.get(5,f,b);
 
                 screenX1 = window.innerWidth * xStart;
                 screenY1 = window.innerHeight * (1 - yStart);

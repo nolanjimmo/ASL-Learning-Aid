@@ -33,22 +33,48 @@
     <script src="CS228Dataset/train9Goldman.js"></script>
     <!-- <script src="test.js"></script> -->
     <title></title>
+    <style>
+        .button {
+        width:25%;
+        height: 300px;
+        position:relative;
+        top:-480px;
+        }
+
+        li {
+        display: inline;
+        margin: 1%;
+        }
+        p {
+        display: inline;
+        padding 3%;
+        }
+    </style>
 </head>
 <body>
     <main>
-        Hello World!
+        <p>Username___Correct___Incorrect___Speed Test____ Previous Correct/Incorrect</p>
+        <ul id="users">
+            <li id="user1_name" style="color: white;">user1</li>
+            <li id="user1_correct" style="color: white;">2</li>
+            <li id="user1_wrong" style="color: white;">14</li>
+            <li id="user1_speed" style="color: white;">0</li>
+            <li id="user1_previous" style="color: white;">0/0</li>
+            <li id="user2_name" style="color: white;">user2</li>
+            <li id="user2_correct" style="color: white;">6</li>
+            <li id="user2_wrong" style="color: white;">6</li>
+            <li id="user2_speed" style="color: white;">20.002</li>
+            <li id="user2_previous" style="color: white;">0/0</li>
+            <li id="user3_name" style="color: white;">user3</li>
+            <li id="user3_correct" style="color: white;">9</li>
+            <li id="user3_wrong" style="color: white;">4</li>
+            <li id="user3_speed" style="color: white;">12.826</li>
+            <li id="user3_previous" style="color: white;">0/0</li>
+        </ul>
         <form id="myform">
             <input id="username" type="text" name="username" placeholder="name">
             <button onclick="return SignIn();" type="submit">Sign in</button>
         </form>
     </main>
-    <ul id="users">
-        <li id="user1_name">user1</li>
-        <li id="user1_signins">7</li>
-        <li id="user2_name">user2</li>
-        <li id="user2_signins">6</li>
-        <li id="user3_name">user3</li>
-        <li id="user3_signins">9</li>
-    </ul>
 </body>
 </html>

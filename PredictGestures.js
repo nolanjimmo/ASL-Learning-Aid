@@ -37,28 +37,40 @@ var currentSample = 0;
 var oneFrameOfData = nj.zeros([5,4,6]);
 var predResultCounter = 0;
 var meanPredAccuracy = 0;
-var digitToShow = 0;
+var digitToShow = 1;
 var timeSinceLastDigitChange = new Date();
-var learned0 = false;
-var learned1 = false;
-var learned2 = false;
-var learned3 = false;
-var learned4 = false;
-var learned5 = false;
-var learned6 = false;
-var learned7 = false;
-var learned8 = false;
-var learned9 = false;
-var timeInterval0 = 5;
-var timeInterval1 = 5;
-var timeInterval2 = 5;
-var timeInterval3 = 5;
-var timeInterval4 = 5;
-var timeInterval5 = 5;
-var timeInterval6 = 5;
-var timeInterval7 = 5;
-var timeInterval8 = 5;
-var timeInterval9 = 5;
+var timeInterval0 = 4;
+var timeInterval1 = 4;
+var timeInterval2 = 4;
+var timeInterval3 = 4;
+var timeInterval4 = 4;
+var timeInterval5 = 4;
+var timeInterval6 = 4;
+var timeInterval7 = 4;
+var timeInterval8 = 4;
+var timeInterval9 = 4;
+var speed0Done = false;
+var speed1Done = false;
+var speed2Done = false;
+var speed3Done = false;
+var speed4Done = false;
+var speed5Done = false;
+var speed6Done = false;
+var speed7Done = false;
+var speed8Done = false;
+var speed9Done = false;
+var firstSignCorrect = false;
+var timerStart;
+var timerEnd;
+var timerOn = false;
+var timerStopped = true;
+var timerStarted = false;
+var currentUsername;
+var list;
+var lessonMode = false;
+var speedTestMode = false;
+var navigationTimer;
+var navTimerOn = false;
 
 Leap.loop(controllerOptions, function(frame)
 {
@@ -67,6 +79,13 @@ Leap.loop(controllerOptions, function(frame)
     oldXRange = rawXMax - rawYMin;
     oldYRange = rawYMax - rawYMin;
     clear();
+    if(lessonMode == false && speedTestMode == false){
+        image(lessons, 0, window.innerHeight/2, window.innerWidth/4, window.innerHeight/2);
+        image(speedTest, window.innerWidth/4, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+    } else if (lessonMode && !speedTestMode)
+        image(lessons, 0, window.innerHeight/2, window.innerWidth/4, window.innerHeight/2);
+     else if (speedTestMode && !lessonMode)
+        image(speedTest, window.innerWidth/4, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
     DetermineState(frame);
     if (programState == 0){
         HandleState0(frame);
@@ -75,10 +94,35 @@ Leap.loop(controllerOptions, function(frame)
     } else {
         HandleState2(frame);
     }
-    RecordData();
     previousNumHands = frame.hands.length;
+    checkStartTimer();
+    checkEndTimer();
+
 }
 );
+
+function checkStartTimer(){
+    if (timerStopped == true && timerOn == true){
+        timerStart = new Date();
+        timerStarted = true;
+        timerStopped = false;
+    }
+};
+
+function checkEndTimer(){
+    if(speed2Done && timerOn==true && timerStarted && timerStopped==false){
+        timerEnd = new Date();
+        console.log(timerStart, timerEnd);
+        var differentialInMilliseconds = -1*(timerStart - timerEnd);
+        var differentialInSeconds = differentialInMilliseconds/1000;
+        updateFastestSpeed(currentUsername, differentialInSeconds);
+        timerOn = false;
+        firstSignCorrect = false;
+        timerStopped = true;
+        timerStarted = false;
+        //modSpeedValue(currentUsername, differentialInSeconds);
+    }
+};
 
 function Train(){
     //var trainingData = [];
@@ -271,52 +315,97 @@ function HandleState2(frame){
     Test();
 };
 
+function Lessons(){
+    lessonMode = true;
+    timerOn = false;
+    speedTestMode = false;
+};
+
+function SpeedTest(){
+    speedTestMode = true;
+    timerOn = true;
+    lessonMode = false;
+};
+
 function HandIsUncentered(){
     return HandIsToFarToTheLeft();
 };
 
 function DrawLowerRightPanel(){
-    if(digitToShow == 0){
-        image(number0, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval1 > 0)
-            image(digit0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 1){
-        image(number1, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval1 > 0)
-            image(digit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 2){
-        image(number2, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval2 > 0)
-            image(digit2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 3){
-        image(number3, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval3 > 0)
-            image(digit3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 4){
-        image(number4, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval4 > 0)
-            image(digit4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 5){
-        image(number5, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval5 > 0)
-            image(digit5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 6){
-        image(number6, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval6)
-            image(digit6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 7){
-        image(number7, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval7 > 0)
-            image(digit7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 8){
-        image(number8, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval8 > 0)
-            image(digit8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    } else if(digitToShow == 9){
-        image(number9, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-        if(timeInterval9 > 0)
-            image(digit9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
-    };
+    if (lessonMode == true){
+        if(digitToShow == 0){
+            image(number0, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval0 > 2)
+                image(digit0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 1){
+            image(number1, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval1 > 2)
+                image(digit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 2){
+            image(number2, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval2 > 2)
+                image(digit2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 3){
+            image(number3, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval3 > 2)
+                image(digit3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 4){
+            image(number4, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval4 > 2)
+                image(digit4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 5){
+            image(number5, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval5 > 2)
+                image(digit5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 6){
+            image(number6, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval6 > 2)
+                image(digit6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 7){
+            image(number7, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval7 > 2)
+                image(digit7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 8){
+            image(number8, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval8 > 2)
+                image(digit8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        } else if(digitToShow == 9){
+            image(number9, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+            if(timeInterval9 > 2)
+                image(digit9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/1.5);
+        };
+    } else if (speedTestMode == true){
+        if(digitToShow == 0){
+            speed9Done = true;
+            image(number0, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 1){
+            image(number1, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 2){
+            speed1Done = true;
+            image(number2, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 3){
+            speed2Done = true;
+            image(number3, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 4){
+            speed3Done = true;
+            image(number4, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 5){
+            speed4Done = true;
+            image(number5, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 6){
+            speed5Done = true;
+            image(number6, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 7){
+            speed6Done = true;
+            image(number7, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 8){
+            speed7Done = true;
+            image(number8, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        } else if(digitToShow == 9){
+            speed8Done = true;
+            image(number9, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+        }
+    }
     DetermineWhetherToSwitchDigits();
 };
 
@@ -329,119 +418,166 @@ function TimeToSwitchDigits(){
     var currentTime = new Date();
     var difInMilliseconds = -1*(timeSinceLastDigitChange - currentTime);
     var difInSeconds = difInMilliseconds/1000;
-    if(digitToShow == 0 && difInSeconds > timeInterval0)
-        return true;
-    else if(digitToShow == 1 && difInSeconds > timeInterval1)
-        return true;
-    else if(digitToShow == 2 && difInSeconds > timeInterval2)
-        return true;
-    else if(digitToShow == 3 && difInSeconds > timeInterval3)
-        return true;
-    else if(digitToShow == 4 && difInSeconds > timeInterval4)
-        return true;
-    else if(digitToShow == 5 && difInSeconds > timeInterval5)
-        return true;
-    else if(digitToShow == 6 && difInSeconds > timeInterval6)
-        return true;
-    else if(digitToShow == 7 && difInSeconds > timeInterval7)
-        return true;
-    else if(digitToShow == 8 && difInSeconds > timeInterval8)
-        return true;
-    else if(digitToShow == 9 && difInSeconds > timeInterval9)
-        return true;
-    else return false;
+    if(lessonMode == true){
+        if(digitToShow == 0 && difInSeconds > timeInterval0)
+            return true;
+        else if(digitToShow == 1 && difInSeconds > timeInterval1)
+            return true;
+        else if(digitToShow == 2 && difInSeconds > timeInterval2)
+            return true;
+        else if(digitToShow == 3 && difInSeconds > timeInterval3)
+            return true;
+        else if(digitToShow == 4 && difInSeconds > timeInterval4)
+            return true;
+        else if(digitToShow == 5 && difInSeconds > timeInterval5)
+            return true;
+        else if(digitToShow == 6 && difInSeconds > timeInterval6)
+            return true;
+        else if(digitToShow == 7 && difInSeconds > timeInterval7)
+            return true;
+        else if(digitToShow == 8 && difInSeconds > timeInterval8)
+            return true;
+        else if(digitToShow == 9 && difInSeconds > timeInterval9)
+            return true;
+        else return false;
+    } else if(speedTestMode == true){
+        if (meanPredAccuracy > .5){
+            return true;
+        }
+        return false;
+    }
 }
 
 function SwitchDigits(){
     if (digitToShow == 0){
         if(meanPredAccuracy > .5 && timeInterval0 > 0){
-            //learned0 = true;
             --timeInterval0;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 1;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
     } else if (digitToShow == 1){
         if(meanPredAccuracy > .5 && timeInterval1 > 0){
-            //learned1 = true;
             --timeInterval1;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 2;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval1);
+        //console.log(timeInterval1);
     } else if (digitToShow == 2){
         if(meanPredAccuracy > .5 && timeInterval2 > 0){
-            //learned2 = true;
             --timeInterval2;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 3;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval2);
+        //console.log(timeInterval2);
     } else if (digitToShow == 3){
         if(meanPredAccuracy > .5 && timeInterval3 > 0){
-            //learned3 = true;
             --timeInterval3;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 4;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval3);
+        //console.log(timeInterval3);
     } else if (digitToShow == 4){
         if(meanPredAccuracy > .5 && timeInterval4 > 0){
-            //learned4 = true;
             --timeInterval4;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 5;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval4);
+        //console.log(timeInterval4);
     } else if (digitToShow == 5){
         if(meanPredAccuracy > .5 && timeInterval5 > 0){
-            //learned5 = true;
             --timeInterval5;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 6;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval5);
+        //console.log(timeInterval5);
     } else if (digitToShow == 6){
         if(meanPredAccuracy > .5 && timeInterval6 > 0){
-            //learned6 = true;
             --timeInterval6;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 7;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval7);
+        //console.log(timeInterval7);
     } else if (digitToShow == 7){
         if(meanPredAccuracy > .5 && timeInterval7 > 0){
-            //learned7 = true;
             --timeInterval7;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 8;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval7);
+        //console.log(timeInterval7);
     } else if (digitToShow == 8){
         if(meanPredAccuracy > .5 && timeInterval8 > 0){
-            //learned8 = true;
             --timeInterval8;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
         digitToShow = 9;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval8);
+        //console.log(timeInterval8);
     } else if (digitToShow == 9){
         if(meanPredAccuracy > .5 && timeInterval9 > 0){
-            //learned9 = true;
             --timeInterval9;
+            addCorrectValue(currentUsername);
+            if(firstSignCorrect == false)
+                firstSignCorrect = true;
+        } else {
+            addWrongValue(currentUsername);
         }
-        digitToShow = 1;
+        digitToShow = 0;
         predResultCounter = 0;
         timeSinceLastDigitChange = new Date();
-        console.log(timeInterval9);
+        //console.log(timeInterval9);
     }
 }
 
@@ -522,24 +658,37 @@ function DrawImageToHelpUserPutTheirHandOverTheDevice(){
 }
 
 function HandleFrame(frame){
-    hand = frame.hands[0];
-    if(frame.hands.length > 0){
-        HandleHand(hand, frame.interactionBox);
-        //console.log(oneFrameOfData.toString());
-        //Test();
+    if(frame.hands.length == 1){
+        HandleHand(frame.hands[0], frame.interactionBox, 1);
+    } else if (frame.hands.length == 2){
+        var palmPosition = frame.hands[1].palmPosition;
+        console.log(palmPosition);
+        HandleHand(frame.hands[0], frame.interactionBox, 1);
+        HandleHand(frame.hands[1], frame.interactionBox, 2);
+
+        if(palmPosition[0] < 1 && palmPosition[0] > -1){
+            navigationTimer = new Date();
+        }
+        var tEnd = new Date()
+        if((-1*(navigationTimer - tEnd)/1000) > 3){
+            if(palmPosition[0] < 0)
+                Lessons();
+            else
+                SpeedTest();
+        }
     }
 };
 
-function HandleHand(hand, InteractionBox){
+function HandleHand(hand, InteractionBox, handNum){
     fingers = hand.fingers;
         for (var f=fingers.length-1; f>=0; f--) {
             for (var b=fingers[f].bones.length-1; b>=0; b--)  {
-                HandleBone(fingers[f].bones[b], f, InteractionBox);
+                HandleBone(fingers[f].bones[b], f, InteractionBox, handNum);
             }
         };
 };
 
-function HandleBone(bone, finger_index, InteractionBox){
+function HandleBone(bone, finger_index, InteractionBox, handNum){
     var bone_index = bone.type;
     var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true);
     var normalizedNextJoint = InteractionBox.normalizePoint(bone.nextJoint, true);
@@ -551,22 +700,27 @@ function HandleBone(bone, finger_index, InteractionBox){
     oneFrameOfData.set(finger_index, bone_index, 4, normalizedNextJoint[1]);
     oneFrameOfData.set(finger_index, bone_index, 5,  normalizedNextJoint[2]);
 
-
-    screenX1 = (window.innerWidth/2) * normalizedPrevJoint[0];
-    screenY1 = (window.innerHeight/2) * (1 - normalizedPrevJoint[1]);
-    screenX2 = (window.innerWidth/2) * normalizedNextJoint[0];
-    screenY2 = (window.innerHeight/2) * (1 - normalizedNextJoint[1]);
-
+    if(handNum == 1){
+        screenX1 = (window.innerWidth/2) * normalizedPrevJoint[0];
+        screenY1 = (window.innerHeight/2) * (1 - normalizedPrevJoint[1]);
+        screenX2 = (window.innerWidth/2) * normalizedNextJoint[0];
+        screenY2 = (window.innerHeight/2) * (1 - normalizedNextJoint[1]);
+    } else if(handNum == 2){
+        screenX1 = (window.innerWidth/2) * (normalizedPrevJoint[0]);
+        screenY1 = (window.innerHeight) * (1 - normalizedPrevJoint[1]);
+        screenX2 = (window.innerWidth/2) * (normalizedNextJoint[0]);
+        screenY2 = (window.innerHeight) * (1 - normalizedNextJoint[1]);
+    }
 
 
 
     //If anyone comes to look at how I did the strokeWeight calculation... I don't really understand why you would need to pass another param
     //in to this function when you have the bone type already accessible, so I just this visual conversion using the bone type... I don't really
     //even see another useful variable within finger that isn't within the bone.
-    if (currentNumHands == 1){
+    if (handNum == 1){
         stroke(120-(meanPredAccuracy*120), meanPredAccuracy*120, 0);
         //stroke(180 - bone.type * 60);
-    } else if (currentNumHands == 2){
+    } else if (handNum == 2){
         //stroke(180 - bone.type * 60, 0 ,0);
         stroke(180 - bone.type * 60);
     }
@@ -582,22 +736,6 @@ function HandleFinger(finger){
     for (var b=0; b<finger.bones.length; ++b){
         HandleBone(finger.bones[b]);
     }
-
-};
-
-function RecordData(){
-
-    if(currentNumHands == 2){
-        currentSample++;
-        if(currentSample == numSamples){
-            currentSample = 0;
-        };
-    };
-    if(currentNumHands > 0 && previousNumHands > currentNumHands){
-        background(100);
-        //console.log(oneFrameOfData.pick(null,null,null,0).toString());
-        console.log(oneFrameOfData.toString());
-    };
 
 };
 
@@ -654,38 +792,87 @@ function CenterData(){
 
 function SignIn(){
     var username = document.getElementById('username').value;
-    var list = document.getElementById('users');
+    currentUsername = username;
+    list = document.getElementById('users');
     if (IsNewUser(username, list)){
         createNewUser(username, list);
-        createSignInItem(username, list);
-    } else {
-        var ID = String(username) + "_signins";
-        var listItem = document.getElementById( ID );
-        listItem.innerHTML = parseInt(listItem.innerHTML) + 1;
-    }
-    //var item = document.createElement('li');
-    //item.innerHTML = String(username);
-    //list.appendChild(item);
-    //console.log("You are signed in: " + username);
-    //console.log(list);
-    //This log statement is for when we want to copy the list over the HTML file at the end
+    } else
+        updateAndClearPrevious(username);
+    //This console log is for seeing the ul within the html at the end of each "session"
     console.log(list.innerHTML);
+    var li = document.getElementsByTagName("li");
+    for(var i = 0; i < li.length; i++){
+        if(li[i].id != String(username)+"_name" && li[i].id != String(username)+"_correct" && li[i].id != String(username)+"_wrong" && li[i].id != String(username)+"_speed" && li[i].id !=
+        String(username)+"_previous"){
+            li[i].style = 'color:white';
+        } else {
+            li[i].style = 'color:black';
+        }
+    }
     return false;
 };
 
 function createNewUser(username, list){
     var item1 = document.createElement('li');
-        item1.innerHTML = String(username);
-        item1.id = String(username) + "_name";
-        list.appendChild(item1);
+    item1.innerHTML = String(username);
+    item1.id = String(username) + "_name";
+    item1.style = "color:white";
+    list.appendChild(item1);
+    var item2 = document.createElement('li');
+    item2.innerHTML = 0;
+    item2.id = String(username) + "_correct";
+    item2.style = "color:white";
+    list.appendChild(item2);
+    var item3 = document.createElement('li');
+    item3.innerHTML = 0;
+    item3.id = String(username) + "_wrong";
+    item3.style = "color:white";
+    list.appendChild(item3);
+    var item4 = document.createElement('li');
+    item4.innerHTML = 0;
+    item4.id = String(username) + "_speed";
+    item4.style = "color:white";
+    list.appendChild(item4);
+    var item5 = document.createElement('li');
+    item5.innerHTML = "0/0";
+    item5.id = String(username) + "_previous";
+    item5.style = "color:white";
+    list.appendChild(item5);
 };
 
-function createSignInItem(username, list){
-    var item2 = document.createElement('li');
-        item2.innerHTML = 1;
-        item2.id = String(username) + "_signins";
-        list.appendChild(item2);
+function addCorrectValue(username){
+    var ID = String(username) + "_correct";
+    var listItem = document.getElementById(ID);
+    listItem.innerHTML = parseInt(listItem.innerHTML) + 1;
 };
+
+function addWrongValue(username){
+    var ID = String(username) + "_wrong";
+    var listItem = document.getElementById(ID);
+    listItem.innerHTML = parseInt(listItem.innerHTML) + 1;
+};
+
+function updateFastestSpeed(username, speedValue){
+    var ID = String(username) + "_speed";
+    var listItem = document.getElementById(ID);
+    if (speedValue < parseInt(listItem.innerHTML)){
+        listItem.innerHTML = speedValue;
+    } else if (parseInt(listItem.innerHTML) == 0){
+        listItem.innerHTML = speedValue;
+    }
+};
+
+function updateAndClearPrevious(username){
+    var pID = String(username) + "_previous";
+    var cID = String(username) + "_correct";
+    var wID = String(username) + "_wrong";
+    var pListItem = document.getElementById(pID);
+    var cListItem = document.getElementById(cID);
+    var wListItem = document.getElementById(wID);
+    pListItem.innerHTML = String(cListItem.innerHTML) + "/" + String(wListItem.innerHTML)
+    cListItem.innerHTML = 0;
+    wListItem.innerHTML = 0;
+}
 
 function IsNewUser(username, list){
     var users = list.children;
