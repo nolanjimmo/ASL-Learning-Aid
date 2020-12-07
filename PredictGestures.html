@@ -17,16 +17,20 @@
     <script src="CS228Dataset/train5Faucher.js"></script>
     <script src="CS228Dataset/train5Manian.js"></script>
     <script src="CS228Dataset/train5Kiely.js"></script>
+    <script src="CS228Dataset/train5Pooprasert.js"></script>
     <script src="CS228Dataset/train0Croxford.js"></script>
+    <script src="CS228Dataset/train0Wills.js"></script>
+    <script src="CS228Dataset/train0Bongard.js"></script>
     <script src="CS228Dataset/train3Beattie.js"></script>
     <script src="CS228Dataset/train3Jing.js"></script>
     <script src="CS228Dataset/train3Luksevish.js"></script>
-    <script src="CS228Dataset/train4Beattie.js"></script>
+    <script src="CS228Dataset/train4Liu.js"></script>
     <script src="CS228Dataset/train4Bongard.js"></script>
     <script src="train4.js"></script>
     <script src="CS228Dataset/train6Blewett.js"></script>
+    <script src="CS228Dataset/train6Fekert.js"></script>
     <script src="train6.js"></script>
-    <script src="CS228Dataset/train7Bongard.js"></script>
+    <script src="CS228Dataset/train7Pooprasert.js"></script>
     <script src="train7.js"></script>
     <script src="CS228Dataset/train8Bongard.js"></script>
     <script src="train8.js"></script>
@@ -41,9 +45,10 @@
         top:-480px;
         }
 
-        li {
-        display: inline;
-        margin: 1%;
+        .embedded{
+            display: inline-block;
+            margin: 1%;
+            list-style-type:none;
         }
         p {
         display: inline;
@@ -51,25 +56,37 @@
         }
     </style>
 </head>
-<body>
+<body style="background-color:BurlyWood">
     <main>
-        <p>Username___Correct___Incorrect___Speed Test____ Previous Correct/Incorrect</p>
         <ul id="users">
-            <li id="user1_name" style="color: white;">user1</li>
-            <li id="user1_correct" style="color: white;">2</li>
-            <li id="user1_wrong" style="color: white;">14</li>
-            <li id="user1_speed" style="color: white;">0</li>
-            <li id="user1_previous" style="color: white;">0/0</li>
-            <li id="user2_name" style="color: white;">user2</li>
-            <li id="user2_correct" style="color: white;">6</li>
-            <li id="user2_wrong" style="color: white;">6</li>
-            <li id="user2_speed" style="color: white;">20.002</li>
-            <li id="user2_previous" style="color: white;">0/0</li>
-            <li id="user3_name" style="color: white;">user3</li>
-            <li id="user3_correct" style="color: white;">9</li>
-            <li id="user3_wrong" style="color: white;">4</li>
-            <li id="user3_speed" style="color: white;">12.826</li>
-            <li id="user3_previous" style="color: white;">0/0</li>
+            <ul id="key" class="embedded">
+                <li>Username</li>
+                <li>Current Correct Signs</li>
+                <li>Current Incorrect Signs</li>
+                <li>Fastest Speed Test</li>
+                <li>Previous Correct/Incorrect</li>
+            </ul>
+            <ul id="user1" class="embedded">
+                <li id="user1_name" style="color: BurlyWood;">user1</li>
+                <li id="user1_correct" style="color: BurlyWood;">2</li>
+                <li id="user1_wrong" style="color: BurlyWood;">14</li>
+                <li id="user1_speed" style="color: BurlyWood;">0</li>
+                <li id="user1_previous" style="color: BurlyWood;">0/0</li>
+            </ul>
+            <ul id="user2" class="embedded">
+                <li id="user2_name" style="color: BurlyWood;">user2</li>
+                <li id="user2_correct" style="color: BurlyWood;">6</li>
+                <li id="user2_wrong" style="color: BurlyWood;">6</li>
+                <li id="user2_speed" style="color: BurlyWood;">20.002</li>
+                <li id="user2_previous" style="color: BurlyWood;">0/0</li>
+            </ul>
+            <ul id="user3" class="embedded">
+                <li id="user3_name" style="color: BurlyWood;">user3</li>
+                <li id="user3_correct" style="color: BurlyWood;">9</li>
+                <li id="user3_wrong" style="color: BurlyWood;">4</li>
+                <li id="user3_speed" style="color: BurlyWood;">9.826</li>
+                <li id="user3_previous" style="color: BurlyWood;">0/0</li>
+            </ul>
         </ul>
         <form id="myform">
             <input id="username" type="text" name="username" placeholder="name">

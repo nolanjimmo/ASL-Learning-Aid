@@ -1,5 +1,4 @@
 var controllerOptions ={};
-nj.config.printThreshold = 1000;
 var x;
 var y;
 var z;
@@ -13,6 +12,7 @@ var screenX2;
 var screenY2;
 var oldXRange;
 var oldYRange;
+nj.config.printThreshold = 1000;
 var newXRange = window.innerWidth;
 var newYRange = window.innerHeight;
 var hand;
